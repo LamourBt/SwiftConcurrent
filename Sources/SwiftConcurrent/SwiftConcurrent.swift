@@ -1,3 +1,5 @@
+import Foundation
+import Dispatch
 
 public struct Semaphore {
 	private let semaphore: DispatchSemaphore
@@ -13,7 +15,9 @@ public struct Semaphore {
 	}
 }
 
-
+/**
+GCDPooling isn't the same as GCD Thread Pool but a pool but of queues.
+*/
 final class GCDPooling {
 	private let quantity: Int
 	private let queues: [DispatchQueue]
@@ -27,9 +31,10 @@ final class GCDPooling {
 	}
 	///return number of queues in the pool
 	public var size: Int { return quantity }
+	public var isEmpty: Bool { return queues.isEmpty }
 	
 	public func runOnto(queueAtIndex index: Int, completion: @escaping ()->()) {
-		if index <= self.quantity {
+		if index > 0 && index < self.quantity {
 			self.queues[index].async(group: self.group) {
 				completion()
 			}
